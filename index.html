@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Um convite especial para Iza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#fffaf6;
+    --blush:#ffe3e9;
+    --blush-deep:#ffc4d2;
+    --rose:#f7a8bd;
+    --rose-deep:#ef7fa0;
+    --red-soft:#e8607c;
+    --ink:#3a2e34;
+    --ink-soft:#8a7680;
+    --gold:#f6d6a8;
+    --shadow:0 20px 60px -20px rgba(199,98,128,0.35);
+    --shadow-soft:0 8px 30px -10px rgba(199,98,128,0.25);
+    --radius-lg:28px;
+    --radius-md:18px;
+    --radius-sm:12px;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html,body{
+    width:100%;
+    min-height:100%;
+  }
+
+  body{
+    font-family:'Poppins',sans-serif;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,196,210,0.55), transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(246,214,168,0.4), transparent 50%),
+      var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow-x:hidden;
+    position:relative;
+    padding:24px;
+  }
+
+  /* Particles canvas for celebration FX */
+
+  .stage{
+    position:relative;
+    width:100%;
+    max-width:480px;
+    z-index:1;
+  }
+
+  .card{
+    background:rgba(255,255,255,0.78);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.6);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow);
+    padding:48px 36px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+
+  .card::before{
+    content:'';
+    position:absolute;
+    top:-60px;
+    right:-60px;
+    width:160px;
+    height:160px;
+    background:radial-gradient(circle, var(--blush-deep), transparent 70%);
+    opacity:.6;
+    border-radius:50%;
+    filter:blur(10px);
+  }
+
+  .screen{
+    display:none;
+  }
+  .screen.active{
+    display:block;
+    animation:fadeRise .7s var(--ease) both;
+  }
+
+  @keyframes fadeRise{
+    from{opacity:0; transform:translateY(24px) scale(.98);}
+    to{opacity:1; transform:translateY(0) scale(1);}
+  }
+
+  /* ---------- Typography ---------- */
+  .eyebrow{
+    font-size:.78rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--rose-deep);
+    font-weight:600;
+    margin-bottom:14px;
+    display:block;
+  }
+
+  h1.title{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:clamp(1.9rem, 6vw, 2.6rem);
+    line-height:1.2;
+    color:var(--ink);
+    margin-bottom:8px;
+  }
+
+  .question{
+    font-size:1.05rem;
+    color:var(--ink-soft);
+    margin-top:18px;
+    margin-bottom:32px;
+    line-height:1.6;
+  }
+
+  /* ---------- Buttons (start screen) ---------- */
+  .choice-row{
+    position:relative;
+    display:flex;
+    justify-content:center;
+    gap:18px;
+    min-height:64px;
+  }
+
+  .btn{
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:1rem;
+    border:none;
+    border-radius:999px;
+    padding:16px 38px;
+    cursor:pointer;
+    transition:transform .25s var(--ease), box-shadow .25s var(--ease), background .3s ease;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+  }
+
+  .btn-yes{
+    background:linear-gradient(135deg, var(--rose-deep), var(--red-soft));
+    color:#fff;
+    box-shadow:0 12px 30px -8px rgba(232,96,124,0.55);
+  }
+  .btn-yes:hover{
+    transform:translateY(-3px) scale(1.03);
+    box-shadow:0 18px 38px -8px rgba(232,96,124,0.6);
+  }
+  .btn-yes:active{transform:translateY(0) scale(.98);}
+
+  .btn-no{
+    background:#fff;
+    color:var(--ink-soft);
+    border:1px solid rgba(0,0,0,0.06);
+    box-shadow:var(--shadow-soft);
+    position:fixed;
+    z-index:50;
+    white-space:nowrap;
+    touch-action:none;
+  }
+
+  .btn-no.placed{
+    position:fixed;
+  }
+
+  /* ---------- Confetti / hearts canvas ---------- */
+  #fx-canvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:40;
+  }
+
+  /* ---------- Confirmation screen ---------- */
+  .heart-burst{
+    font-size:2.6rem;
+    display:block;
+    margin-bottom:6px;
+  }
+
+  .subtext{
+    color:var(--ink-soft);
+    font-size:.96rem;
+    line-height:1.6;
+    margin-top:6px;
+    margin-bottom:6px;
+  }
+
+  /* ---------- Calendar ---------- */
+  .section-label{
+    font-size:.92rem;
+    font-weight:600;
+    color:var(--ink);
+    margin:28px 0 14px;
+    text-align:left;
+  }
+
+  .calendar{
+    background:#fff;
+    border-radius:var(--radius-md);
+    box-shadow:var(--shadow-soft);
+    padding:18px 16px 20px;
+    border:1px solid rgba(0,0,0,0.04);
+  }
+
+  .cal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+    padding:0 4px;
+  }
+
+  .cal-month{
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:1.1rem;
+  }
+
+  .cal-nav{
+    display:flex;
+    gap:6px;
+  }
+
+  .cal-nav button{
+    width:32px;height:32px;
+    border-radius:50%;
+    border:none;
+    background:var(--blush);
+    color:var(--rose-deep);
+    font-size:1rem;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s ease, transform .15s ease;
+  }
+  .cal-nav button:hover{background:var(--blush-deep); transform:scale(1.08);}
+  .cal-nav button:disabled{opacity:.35; cursor:not-allowed;}
+
+  .cal-weekdays, .cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:4px;
+  }
+
+  .cal-weekdays span{
+    font-size:.7rem;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--ink-soft);
+    text-align:center;
+    padding:4px 0;
+    font-weight:600;
+  }
+
+  .cal-day{
+    aspect-ratio:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    font-size:.88rem;
+    border:none;
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease, transform .15s ease;
+    position:relative;
+  }
+
+  .cal-day.empty{
+    cursor:default;
+    pointer-events:none;
+  }
+
+  .cal-day.disabled{
+    color:#d8cdd1;
+    cursor:not-allowed;
+    pointer-events:none;
+  }
+
+  .cal-day:hover:not(.disabled):not(.empty){
+    background:var(--blush);
+    transform:scale(1.08);
+  }
+
+  .cal-day.selected{
+    background:linear-gradient(135deg, var(--rose-deep), var(--red-soft));
+    color:#fff;
+    box-shadow:0 8px 18px -6px rgba(232,96,124,0.55);
+    transform:scale(1.05);
+    animation:popDay .35s var(--ease);
+  }
+
+  @keyframes popDay{
+    0%{transform:scale(.7);}
+    60%{transform:scale(1.18);}
+    100%{transform:scale(1.05);}
+  }
+
+  /* ---------- Time chips ---------- */
+  .fade-section{
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    transition:max-height .5s var(--ease), opacity .4s ease, margin .5s var(--ease);
+  }
+  .fade-section.open{
+    max-height:1000px;
+    opacity:1;
+  }
+
+  .time-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+    margin-top:6px;
+  }
+
+  .time-chip{
+    font-family:'Poppins',sans-serif;
+    font-weight:500;
+    font-size:.92rem;
+    padding:11px 8px;
+    border-radius:var(--radius-sm);
+    border:1px solid rgba(0,0,0,0.06);
+    background:#fff;
+    color:var(--ink);
+    cursor:pointer;
+    transition:all .25s var(--ease);
+    box-shadow:0 2px 8px -4px rgba(0,0,0,0.04);
+  }
+
+  .time-chip:hover{
+    border-color:var(--rose);
+    background:var(--blush);
+    transform:translateY(-2px);
+  }
+
+  .time-chip.selected{
+    background:linear-gradient(135deg, var(--rose-deep), var(--red-soft));
+    color:#fff;
+    border-color:transparent;
+    box-shadow:0 10px 22px -8px rgba(232,96,124,0.5);
+    animation:popDay .35s var(--ease);
+  }
+
+  /* ---------- Date type cards ---------- */
+  .type-grid{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-top:6px;
+  }
+
+  .type-card{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:16px 18px;
+    border-radius:var(--radius-md);
+    border:1px solid rgba(0,0,0,0.06);
+    background:#fff;
+    cursor:pointer;
+    text-align:left;
+    transition:all .25s var(--ease);
+    box-shadow:0 2px 8px -4px rgba(0,0,0,0.04);
+  }
+
+  .type-card:hover{
+    border-color:var(--rose);
+    background:var(--blush);
+    transform:translateY(-2px);
+  }
+
+  .type-card.selected{
+    border-color:transparent;
+    background:linear-gradient(135deg, rgba(247,168,189,0.35), rgba(246,214,168,0.35));
+    box-shadow:0 10px 26px -10px rgba(232,96,124,0.4), inset 0 0 0 2px var(--rose-deep);
+    animation:popDay .35s var(--ease);
+  }
+
+  .type-icon{
+    font-size:1.6rem;
+    flex-shrink:0;
+  }
+
+  .type-name{
+    font-weight:600;
+    font-size:.98rem;
+  }
+
+  /* ---------- Confirm button ---------- */
+  .confirm-btn{
+    margin-top:30px;
+    width:100%;
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:1.02rem;
+    padding:17px;
+    border-radius:999px;
+    border:none;
+    color:#fff;
+    background:linear-gradient(135deg, var(--rose-deep), var(--red-soft));
+    cursor:pointer;
+    box-shadow:0 14px 30px -10px rgba(232,96,124,0.5);
+    transition:all .3s var(--ease);
+    opacity:.4;
+    pointer-events:none;
+    transform:scale(.98);
+  }
+
+  .confirm-btn.enabled{
+    opacity:1;
+    pointer-events:auto;
+    transform:scale(1);
+  }
+
+  .confirm-btn.enabled:hover{
+    transform:translateY(-3px) scale(1.01);
+    box-shadow:0 18px 38px -10px rgba(232,96,124,0.6);
+  }
+
+  .confirm-btn.enabled:active{
+    transform:translateY(0) scale(.98);
+  }
+
+  /* ---------- Loading ---------- */
+  .loader-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+    padding:30px 0;
+  }
+
+  .loader-heart{
+    font-size:2.4rem;
+    animation:pulseHeart 1.1s ease-in-out infinite;
+  }
+
+  @keyframes pulseHeart{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.25);}
+  }
+
+  .loader-text{
+    color:var(--ink-soft);
+    font-size:.92rem;
+    letter-spacing:.04em;
+  }
+
+  /* ---------- Final screen ---------- */
+  .final-emoji{
+    font-size:2.4rem;
+    display:block;
+    margin-bottom:10px;
+  }
+
+  .final-msg{
+    font-size:1rem;
+    line-height:1.75;
+    color:var(--ink);
+    margin:14px 0;
+  }
+
+  .signature{
+    margin-top:26px;
+    font-family:'Playfair Display', serif;
+    font-style:italic;
+    font-size:1.15rem;
+    color:var(--rose-deep);
+  }
+
+  .final-summary{
+    margin-top:24px;
+    padding:16px 18px;
+    border-radius:var(--radius-md);
+    background:linear-gradient(135deg, rgba(247,168,189,0.18), rgba(246,214,168,0.22));
+    font-size:.88rem;
+    color:var(--ink-soft);
+    line-height:1.6;
+    text-align:left;
+    border:1px solid rgba(0,0,0,0.04);
+  }
+
+  .final-summary strong{
+    color:var(--ink);
+    font-weight:600;
+  }
+
+  /* ---------- Accessibility / focus ---------- */
+  button:focus-visible{
+    outline:3px solid var(--rose-deep);
+    outline-offset:3px;
+  }
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce){
+    *{
+      animation-duration:.01ms !important;
+      transition-duration:.01ms !important;
+    }
+  }
+
+  @media (max-width:380px){
+    .card{padding:36px 22px;}
+    .time-grid{grid-template-columns:repeat(2, 1fr);}
+  }
+
+  /* ---------- WhatsApp button ---------- */
+  .whatsapp-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-top:18px;
+    width:100%;
+    padding:16px 20px;
+    border-radius:999px;
+    border:none;
+    background:linear-gradient(135deg, #ffb6c8, #f7a8bd);
+    color:#3a2e34;
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size:.97rem;
+    cursor:pointer;
+    box-shadow:0 10px 28px -8px rgba(247,168,189,0.65);
+    transition:transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s cubic-bezier(.22,1,.36,1);
+    text-decoration:none;
+    -webkit-tap-highlight-color:transparent;
+    user-select:none;
+  }
+  .whatsapp-btn:hover{
+    transform:translateY(-3px) scale(1.02);
+    box-shadow:0 16px 36px -8px rgba(247,168,189,0.75);
+  }
+  .whatsapp-btn:active{
+    transform:translateY(0) scale(.98);
+  }
+  .whatsapp-btn svg{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="fx-canvas" aria-hidden="true"></canvas>
+
+<main class="stage">
+  <div class="card">
+
+    <!-- SCREEN 1: Invite -->
+    <section class="screen active" id="screen-invite" aria-label="Convite">
+      <span class="eyebrow">Para</span>
+      <h1 class="title">Senhorita Iza Machado...</h1>
+      <p class="question" id="invite-question">Você aceitaria sair comigo para um date?</p>
+      <div class="choice-row">
+        <button class="btn btn-yes" id="btn-yes">SIM</button>
+        <button class="btn btn-no" id="btn-no">NÃO</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: Confirmation + Scheduling -->
+    <section class="screen" id="screen-schedule" aria-label="Agendamento">
+      <span class="heart-burst">💖</span>
+      <h1 class="title" style="font-size:1.6rem;">Perfeito!</h1>
+      <p class="subtext">Fico muito feliz que você aceitou!</p>
+      <p class="subtext">Agora só falta escolher o melhor dia, horário e tipo de date para criarmos uma lembrança especial.</p>
+
+      <!-- Calendar -->
+      <div class="section-label">Escolha a data</div>
+      <div class="calendar">
+        <div class="cal-header">
+          <button class="cal-nav-btn" id="cal-prev" aria-label="Mês anterior">‹</button>
+          <div class="cal-month" id="cal-month-label"></div>
+          <button class="cal-nav-btn" id="cal-next" aria-label="Próximo mês">›</button>
+        </div>
+        <div class="cal-nav" style="display:none;"></div>
+        <div class="cal-weekdays">
+          <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+
+      <!-- Time -->
+      <div class="fade-section" id="time-section">
+        <div class="section-label">Escolha um horário</div>
+        <div class="time-grid" id="time-grid"></div>
+      </div>
+
+      <!-- Date type -->
+      <div class="fade-section" id="type-section">
+        <div class="section-label">Como você gostaria que fosse nosso date?</div>
+        <div class="type-grid">
+          <button class="type-card" data-type="Café" aria-pressed="false">
+            <span class="type-icon">☕</span>
+            <span class="type-name">Café</span>
+          </button>
+          <button class="type-card" data-type="Museu" aria-pressed="false">
+            <span class="type-icon">🏛️</span>
+            <span class="type-name">Museu</span>
+          </button>
+          <button class="type-card" data-type="Sair para beber" aria-pressed="false">
+            <span class="type-icon">🍻</span>
+            <span class="type-name">Sair para beber</span>
+          </button>
+        </div>
+      </div>
+
+      <button class="confirm-btn" id="confirm-btn">Confirmar nosso date ❤️</button>
+    </section>
+
+    <!-- SCREEN 3: Loading -->
+    <section class="screen" id="screen-loading" aria-label="Carregando">
+      <div class="loader-wrap">
+        <span class="loader-heart">💗</span>
+        <span class="loader-text">Marcando esse momento especial...</span>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: Final -->
+    <section class="screen" id="screen-final" aria-label="Confirmação final">
+      <span class="final-emoji">🎉</span>
+      <h1 class="title" style="font-size:1.5rem;">Agora oficialmente temos um date marcado.</h1>
+      <p class="final-msg">Prometo boas risadas, boa companhia e uma experiência incrível.</p>
+      <p class="final-msg">Mal posso esperar para viver esse momento com você.</p>
+      <p class="final-msg">Te aguardo ansiosamente.</p>
+      <p class="signature">Assinado, Felipe Antunes.</p>
+      <div class="final-summary" id="final-summary"></div>
+      <button class="whatsapp-btn" id="whatsapp-btn" onclick="sendWhatsApp()">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Enviar para o Felipe por WhatsApp
+      </button>
+    </section>
+
+  </div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  /* =========================================================
+     Utility helpers
+  ========================================================= */
+  const $ = (sel, ctx=document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const rand = (min, max) => Math.random() * (max - min) + min;
+
+  function vibrate(pattern){
+    if(navigator.vibrate){ try{ navigator.vibrate(pattern); }catch(e){} }
+  }
+
+  /* =========================================================
+     Screen transitions
+  ========================================================= */
+  function goToScreen(id){
+    $$('.screen').forEach(s => s.classList.remove('active'));
+    requestAnimationFrame(()=>{
+      $(`#${id}`).classList.add('active');
+    });
+  }
+
+  /* =========================================================
+     "NÃO" button - the runaway button
+  ========================================================= */
+  const btnNo = $('#btn-no');
+  const btnYes = $('#btn-yes');
+  const choiceRow = $('.choice-row');
+
+  let noAttempts = 0;
+  let noVisible = true;
+
+  const noTexts = [
+    'NÃO',
+    'Tem certeza?',
+    'Pensa de novo...',
+    'Vai, dá uma chance...',
+    'Eu prometo que vai ser divertido.',
+    'Esse botão nunca vai deixar você clicar 😂'
+  ];
+
+  function placeNoButtonInitial(){
+    const rect = btnNo.getBoundingClientRect();
+    btnNo.style.position = 'static';
+  }
+
+  function getButtonSize(){
+    return { w: btnNo.offsetWidth, h: btnNo.offsetHeight };
+  }
+
+  function rectsOverlap(x, y, w, h, rect, pad){
+    return !(
+      x + w + pad < rect.left ||
+      x - pad > rect.right ||
+      y + h + pad < rect.top ||
+      y - pad > rect.bottom
+    );
+  }
+
+  function moveNoButton(originPoint){
+    const { w, h } = getButtonSize();
+    const margin = 12;
+    const maxX = window.innerWidth - w - margin;
+    const maxY = window.innerHeight - h - margin;
+    const yesRect = btnYes.getBoundingClientRect();
+    const safePad = 24;
+
+    let x, y, tries = 0;
+    do{
+      x = rand(margin, Math.max(margin, maxX));
+      y = rand(margin, Math.max(margin, maxY));
+      tries++;
+    } while(
+      (
+        rectsOverlap(x, y, w, h, yesRect, safePad) ||
+        (
+          originPoint &&
+          Math.hypot(x - originPoint.x, y - originPoint.y) < Math.min(window.innerWidth, window.innerHeight) * 0.22
+        )
+      ) && tries < 20
+    );
+
+    if(btnNo.style.position !== 'fixed'){
+      btnNo.classList.add('placed');
+      btnNo.style.position = 'fixed';
+    }
+
+    btnNo.style.left = x + 'px';
+    btnNo.style.top = y + 'px';
+
+    // scale variation
+    const scale = rand(0.75, 1.12);
+    // rotation variation
+    const rot = rand(-18, 18);
+
+    const speed = clamp(0.18 - noAttempts * 0.008, 0.09, 0.22);
+    btnNo.style.transition = `left ${speed}s var(--ease), top ${speed}s var(--ease), transform .25s var(--ease)`;
+    btnNo.style.transform = `scale(${scale.toFixed(3)}) rotate(${rot.toFixed(1)}deg)`;
+  }
+
+  function escalateNoText(){
+    noAttempts++;
+    const idx = clamp(noAttempts - 1, 0, noTexts.length - 1);
+    if(noAttempts >= 1 && noAttempts <= noTexts.length){
+      btnNo.textContent = noTexts[idx];
+    }
+  }
+
+  function fleeFrom(point){
+    escalateNoText();
+    moveNoButton(point);
+    vibrate(8);
+  }
+
+  // Desktop: detect proximity on mousemove
+  let lastFleeTime = 0;
+  document.addEventListener('mousemove', (e) => {
+    if(!noVisible) return;
+    const rect = btnNo.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+    const threshold = Math.max(rect.width, rect.height) * 0.9 + 40;
+    if(dist < threshold){
+      const now = Date.now();
+      if(now - lastFleeTime > 80){
+        lastFleeTime = now;
+        fleeFrom({x: e.clientX, y: e.clientY});
+      }
+    }
+  }, { passive: true });
+
+  // Mobile: detect touch intent before tap registers (touchstart on the whole document)
+  document.addEventListener('touchstart', (e) => {
+    if(!noVisible) return;
+    const touch = e.touches[0];
+    if(!touch) return;
+    const rect = btnNo.getBoundingClientRect();
+    const cx = rect.left + rect.width/2;
+    const cy = rect.top + rect.height/2;
+    const dist = Math.hypot(touch.clientX - cx, touch.clientY - cy);
+    const threshold = Math.max(rect.width, rect.height) * 1.3 + 60;
+    if(dist < threshold){
+      fleeFrom({x: touch.clientX, y: touch.clientY});
+    }
+  }, { passive: true });
+
+  // Fallback: prevent any click/focus from landing
+  btnNo.addEventListener('click', (e) => {
+    e.preventDefault();
+    fleeFrom({x: e.clientX, y: e.clientY});
+  });
+  btnNo.addEventListener('mouseenter', (e) => {
+    fleeFrom({x: e.clientX, y: e.clientY});
+  });
+  btnNo.addEventListener('focus', () => {
+    fleeFrom(null);
+    btnNo.blur();
+  });
+
+  // Place once at start (kept inline until first interaction nearby)
+  window.addEventListener('resize', () => {
+    if(btnNo.style.position === 'fixed'){
+      const { w, h } = getButtonSize();
+      const margin = 12;
+      const x = clamp(parseFloat(btnNo.style.left), margin, window.innerWidth - w - margin);
+      const y = clamp(parseFloat(btnNo.style.top), margin, window.innerHeight - h - margin);
+      btnNo.style.left = x + 'px';
+      btnNo.style.top = y + 'px';
+    }
+  });
+
+  /* =========================================================
+     "SIM" button - celebration sequence
+  ========================================================= */
+  btnYes.addEventListener('click', () => {
+    btnYes.disabled = true;
+    noVisible = false;
+    btnNo.style.transition = 'opacity .4s ease, transform .4s ease';
+    btnNo.style.opacity = '0';
+    btnNo.style.transform += ' scale(0.4)';
+    btnNo.style.pointerEvents = 'none';
+
+    // Expand + glow
+    btnYes.style.transition = 'transform .5s var(--ease), box-shadow .5s var(--ease)';
+    btnYes.style.transform = 'scale(1.15)';
+    btnYes.style.boxShadow = '0 0 60px 10px rgba(232,96,124,0.6)';
+
+    vibrate([10, 40, 10, 60]);
+    playChime();
+    burstConfetti();
+    burstHearts();
+
+    setTimeout(() => {
+      goToScreen('screen-schedule');
+    }, 1100);
+  });
+
+  /* =========================================================
+     Sound (tiny romantic chime via WebAudio, optional)
+  ========================================================= */
+  function playChime(){
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = ctx.currentTime;
+      const notes = [659.25, 783.99, 987.77]; // E5, G5, B5
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, now + i*0.12);
+        gain.gain.linearRampToValueAtTime(0.12, now + i*0.12 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + i*0.12 + 0.6);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now + i*0.12);
+        osc.stop(now + i*0.12 + 0.65);
+      });
+    }catch(e){ /* audio not available */ }
+  }
+
+  /* =========================================================
+     Canvas FX: confetti + hearts burst
+  ========================================================= */
+  const fxCanvas = $('#fx-canvas');
+  const fxCtx = fxCanvas.getContext('2d');
+
+  function resizeCanvas(canvas){
+    canvas.width = window.innerWidth * devicePixelRatio;
+    canvas.height = window.innerHeight * devicePixelRatio;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  }
+  resizeCanvas(fxCanvas);
+  window.addEventListener('resize', () => resizeCanvas(fxCanvas));
+
+  let fxParticles = [];
+  const confettiColors = ['#ef7fa0', '#f7a8bd', '#ffe3e9', '#f6d6a8', '#ffffff'];
+
+  function burstConfetti(){
+    const cx = window.innerWidth/2;
+    const cy = window.innerHeight*0.4;
+    for(let i=0;i<70;i++){
+      const angle = rand(0, Math.PI*2);
+      const speed = rand(3, 9);
+      fxParticles.push({
+        type:'confetti',
+        x: cx, y: cy,
+        vx: Math.cos(angle)*speed,
+        vy: Math.sin(angle)*speed - 2,
+        size: rand(5, 10),
+        color: confettiColors[Math.floor(rand(0, confettiColors.length))],
+        rot: rand(0, Math.PI*2),
+        vrot: rand(-0.2, 0.2),
+        life: 1
+      });
+    }
+    runFxLoop();
+  }
+
+  function burstHearts(){
+    const cx = window.innerWidth/2;
+    const cy = window.innerHeight*0.4;
+    const emojis = ['🎉','✨','😄','💛','🌟','😊'];
+    for(let i=0;i<14;i++){
+      const angle = rand(0, Math.PI*2);
+      const speed = rand(2, 6);
+      fxParticles.push({
+        type:'emoji',
+        x: cx, y: cy,
+        vx: Math.cos(angle)*speed,
+        vy: Math.sin(angle)*speed - 2,
+        size: rand(18, 30),
+        rot: rand(-0.3,0.3),
+        vrot: rand(-0.05,0.05),
+        emoji: emojis[Math.floor(rand(0, emojis.length))],
+        life: 1
+      });
+    }
+    runFxLoop();
+  }
+
+  let fxRunning = false;
+  function runFxLoop(){
+    if(fxRunning) return;
+    fxRunning = true;
+    step();
+  }
+
+  function step(){
+    fxCtx.clearRect(0,0,window.innerWidth, window.innerHeight);
+
+    fxParticles.forEach(p => {
+      if(p.type === 'confetti'){
+        p.vy += 0.12; // gravity
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.vrot;
+        p.life -= 0.012;
+        fxCtx.save();
+        fxCtx.globalAlpha = clamp(p.life, 0, 1);
+        fxCtx.translate(p.x, p.y);
+        fxCtx.rotate(p.rot);
+        fxCtx.fillStyle = p.color;
+        fxCtx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+        fxCtx.restore();
+      } else if(p.type === 'emoji'){
+        p.vy += 0.06;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.vrot;
+        p.life -= 0.012;
+        fxCtx.save();
+        fxCtx.globalAlpha = clamp(p.life, 0, 1);
+        fxCtx.translate(p.x, p.y);
+        fxCtx.rotate(p.rot);
+        fxCtx.font = `${p.size}px serif`;
+        fxCtx.textAlign = 'center';
+        fxCtx.textBaseline = 'middle';
+        fxCtx.fillText(p.emoji, 0, 0);
+        fxCtx.restore();
+      }
+    });
+
+    fxParticles = fxParticles.filter(p => p.life > 0 && p.y < window.innerHeight + 60 && p.y > -100);
+
+    if(fxParticles.length > 0){
+      requestAnimationFrame(step);
+    } else {
+      fxRunning = false;
+      fxCtx.clearRect(0,0,window.innerWidth, window.innerHeight);
+    }
+  }
+
+  /* =========================================================
+     Ambient background (kept minimal per request - none)
+  ========================================================= */
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* =========================================================
+     Calendar
+  ========================================================= */
+  const calMonthLabel = $('#cal-month-label');
+  const calGrid = $('#cal-grid');
+  const calPrev = $('#cal-prev');
+  const calNext = $('#cal-next');
+
+  const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  let viewYear = today.getFullYear();
+  let viewMonth = today.getMonth();
+
+  let selectedDate = null; // Date object
+
+  function renderCalendar(){
+    calMonthLabel.textContent = `${monthNames[viewMonth]} ${viewYear}`;
+
+    const firstDay = new Date(viewYear, viewMonth, 1);
+    const startWeekday = firstDay.getDay();
+    const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+
+    calGrid.innerHTML = '';
+
+    for(let i=0;i<startWeekday;i++){
+      const empty = document.createElement('div');
+      empty.className = 'cal-day empty';
+      calGrid.appendChild(empty);
+    }
+
+    for(let d=1; d<=daysInMonth; d++){
+      const dateObj = new Date(viewYear, viewMonth, d);
+      const btn = document.createElement('button');
+      btn.className = 'cal-day';
+      btn.type = 'button';
+      btn.textContent = d;
+
+      const isPast = dateObj < today;
+      if(isPast){
+        btn.classList.add('disabled');
+        btn.setAttribute('aria-disabled','true');
+      }
+
+      if(selectedDate && dateObj.getTime() === selectedDate.getTime()){
+        btn.classList.add('selected');
+      }
+
+      btn.addEventListener('click', () => {
+        if(isPast) return;
+        selectedDate = dateObj;
+        renderCalendar();
+        revealTimeSection();
+        vibrate(6);
+        checkConfirmReady();
+      });
+
+      calGrid.appendChild(btn);
+    }
+
+    // prev button disabled if viewing current month
+    const isCurrentMonth = (viewYear === today.getFullYear() && viewMonth === today.getMonth());
+    calPrev.disabled = isCurrentMonth;
+  }
+
+  calPrev.addEventListener('click', () => {
+    viewMonth--;
+    if(viewMonth < 0){ viewMonth = 11; viewYear--; }
+    renderCalendar();
+  });
+  calNext.addEventListener('click', () => {
+    viewMonth++;
+    if(viewMonth > 11){ viewMonth = 0; viewYear++; }
+    renderCalendar();
+  });
+
+  renderCalendar();
+
+  /* =========================================================
+     Time selection
+  ========================================================= */
+  const timeSection = $('#time-section');
+  const typeSection = $('#type-section');
+  const timeGrid = $('#time-grid');
+  const times = ['13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
+
+  let selectedTime = null;
+
+  times.forEach(t => {
+    const chip = document.createElement('button');
+    chip.className = 'time-chip';
+    chip.type = 'button';
+    chip.textContent = t;
+    chip.setAttribute('aria-pressed','false');
+    chip.addEventListener('click', () => {
+      $$('.time-chip').forEach(c => { c.classList.remove('selected'); c.setAttribute('aria-pressed','false'); });
+      chip.classList.add('selected');
+      chip.setAttribute('aria-pressed','true');
+      selectedTime = t;
+      vibrate(6);
+      revealTypeSection();
+      checkConfirmReady();
+    });
+    timeGrid.appendChild(chip);
+  });
+
+  function revealTimeSection(){
+    timeSection.classList.add('open');
+  }
+  function revealTypeSection(){
+    typeSection.classList.add('open');
+  }
+
+  /* =========================================================
+     Date type selection
+  ========================================================= */
+  let selectedType = null;
+  $$('.type-card').forEach(card => {
+    card.addEventListener('click', () => {
+      $$('.type-card').forEach(c => { c.classList.remove('selected'); c.setAttribute('aria-pressed','false'); });
+      card.classList.add('selected');
+      card.setAttribute('aria-pressed','true');
+      selectedType = card.dataset.type;
+      vibrate(6);
+      checkConfirmReady();
+    });
+  });
+
+  /* =========================================================
+     Confirm button
+  ========================================================= */
+  const confirmBtn = $('#confirm-btn');
+
+  function checkConfirmReady(){
+    if(selectedDate && selectedTime && selectedType){
+      confirmBtn.classList.add('enabled');
+    } else {
+      confirmBtn.classList.remove('enabled');
+    }
+  }
+
+  const weekdayNamesLong = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+
+  confirmBtn.addEventListener('click', () => {
+    if(!confirmBtn.classList.contains('enabled')) return;
+
+    goToScreen('screen-loading');
+    vibrate([10,30]);
+
+    setTimeout(() => {
+      const formattedDate = `${selectedDate.getDate()} de ${monthNames[selectedDate.getMonth()].toLowerCase()} (${weekdayNamesLong[selectedDate.getDay()]})`;
+      const summary = $('#final-summary');
+      summary.innerHTML = `
+        <strong>Data:</strong> ${formattedDate}<br>
+        <strong>Horário:</strong> ${selectedTime}<br>
+        <strong>Programa:</strong> ${selectedType}
+      `;
+      // Salvar para o botão WhatsApp
+      window._dateData = {
+        date: formattedDate,
+        time: selectedTime,
+        type: selectedType
+      };
+      goToScreen('screen-final');
+      burstHearts();
+    }, 1600);
+  });
+
+  /* =========================================================
+     WhatsApp send function (compatível com todos os dispositivos)
+  ========================================================= */
+  window.sendWhatsApp = function(){
+    const d = window._dateData;
+    if(!d) return;
+
+    const phone = '5541999959086';
+    const msg = 
+      '🎉 *Nosso Date Marcado!* 🎉\n\n' +
+      '📅 *Data:* ' + d.date + '\n' +
+      '🕐 *Horário:* ' + d.time + '\n' +
+      '✨ *Programa:* ' + d.type + '\n\n' +
+      'Mal posso esperar! 💕';
+
+    const encoded = encodeURIComponent(msg);
+
+    // Detecta o ambiente para usar o link mais compatível
+    const ua = navigator.userAgent || '';
+    const isIOS = /iphone|ipad|ipod/i.test(ua);
+    const isAndroid = /android/i.test(ua);
+    const isMobile = isIOS || isAndroid;
+
+    let url;
+    if(isIOS){
+      // iOS: whatsapp:// deep link é mais confiável
+      url = 'whatsapp://send?phone=' + phone + '&text=' + encoded;
+    } else if(isAndroid){
+      // Android: intent link com fallback para api.whatsapp.com
+      url = 'https://api.whatsapp.com/send?phone=' + phone + '&text=' + encoded;
+    } else {
+      // Desktop: WhatsApp Web
+      url = 'https://web.whatsapp.com/send?phone=' + phone + '&text=' + encoded;
+    }
+
+    // Tenta abrir; se falhar (iOS sem WhatsApp instalado), redireciona para App Store
+    if(isIOS){
+      const start = Date.now();
+      window.location.href = url;
+      setTimeout(function(){
+        // Se ainda está na página após 1.5s, WhatsApp não está instalado
+        if(Date.now() - start < 2000){
+          window.location.href = 'https://apps.apple.com/app/whatsapp-messenger/id310633997';
+        }
+      }, 1500);
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+})();
+</script>
+
+</body>
+</html>
