@@ -1166,12 +1166,17 @@
 
       // Montar e injetar o href do link WhatsApp direto no elemento <a>
       const phone = '5541999959086';
+      const e1  = '\uD83C\uDF89'; // 🎉
+      const e2  = '\uD83D\uDCC5'; // 📅
+      const e3  = '\uD83D\uDD50'; // 🕐
+      const e4  = '\u2728';       // ✨
+      const e5  = '\uD83D\uDC95'; // 💕
       const msg =
-        '🎉 *Nosso Date Marcado!* 🎉\n\n' +
-        '📅 *Data:* ' + formattedDate + '\n' +
-        '🕐 *Horário:* ' + selectedTime + '\n' +
-        '✨ *Programa:* ' + selectedType + '\n\n' +
-        'Mal posso esperar! 💕';
+        e1 + ' *Nosso Date Marcado!* ' + e1 + '\n\n' +
+        e2 + ' *Data:* ' + formattedDate + '\n' +
+        e3 + ' *Hor\u00E1rio:* ' + selectedTime + '\n' +
+        e4 + ' *Programa:* ' + selectedType + '\n\n' +
+        'Mal posso esperar! ' + e5;
       const encoded = encodeURIComponent(msg);
       const waLink = $('#whatsapp-btn');
       waLink.href = 'https://wa.me/' + phone + '?text=' + encoded;
